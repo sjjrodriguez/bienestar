@@ -12,7 +12,7 @@ COPY . .
 RUN chmod +x mvnw
 
 # Compilamos el proyecto saltando los tests para evitar errores de conexión a DB en el build
-RUN ./mvnw clean package -DskipTests
+RUN ./mvnw clean package -Dmaven.test.skip=true
 
 # Renombramos el archivo .jar generado para que sea fácil de ejecutar
 # Esto busca cualquier jar en target y lo mueve a la raíz como app.jar
