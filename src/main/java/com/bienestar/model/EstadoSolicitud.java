@@ -1,2 +1,8 @@
 package com.bienestar.model;
-public enum EstadoSolicitud { PENDIENTE, EN_PROCESO, CERRADA }
+
+public enum EstadoSolicitud {
+    PENDIENTE,
+    APROBADA,
+    RECHAZADA,
+    EN_REVISION
+}
