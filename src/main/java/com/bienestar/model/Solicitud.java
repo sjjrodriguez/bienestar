@@ -2,7 +2,6 @@ package com.bienestar.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,6 +23,10 @@ public class Solicitud {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoSolicitud tipo;
+
+    // CORRECCIÓN: Agregamos el campo para el mensaje del estudiante
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

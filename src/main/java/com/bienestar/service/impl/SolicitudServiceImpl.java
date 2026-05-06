@@ -3,6 +3,7 @@ package com.bienestar.service.impl;
 import com.bienestar.dto.SolicitudDTO;
 import com.bienestar.model.Estudiante;
 import com.bienestar.model.Solicitud;
+import com.bienestar.model.EstadoSolicitud;
 import com.bienestar.repository.EstudianteRepository;
 import com.bienestar.repository.SolicitudRepository;
 import com.bienestar.service.SolicitudService;
@@ -26,9 +27,12 @@ public class SolicitudServiceImpl implements SolicitudService {
         Estudiante estudiante = estudianteRepository.findById(estudianteId)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
 
+        // MAPEO: Ahora pasamos la descripción del Request a la Entidad
         Solicitud solicitud = Solicitud.builder()
                 .estudiante(estudiante)
                 .tipo(request.getTipo())
+                .descripcion(request.getDescripcion()) // <--- IMPORTANTE
+                .estado(EstadoSolicitud.PENDIENTE) // Aseguramos el estado inicial
                 .build();
 
         return toResponse(solicitudRepository.save(solicitud));
@@ -61,6 +65,7 @@ public class SolicitudServiceImpl implements SolicitudService {
                 .estudianteId(s.getEstudiante().getId())
                 .nombreEstudiante(s.getEstudiante().getUsuario().getNombre())
                 .tipo(s.getTipo())
+                .descripcion(s.getDescripcion()) // <--- Para que el estudiante la vea en su lista
                 .estado(s.getEstado())
                 .createdAt(s.getCreatedAt())
                 .build();
