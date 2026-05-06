@@ -32,6 +32,7 @@ public class CitaDTO {
         private String nombreEstudiante;
         private Long profesionalId;
         private String nombreProfesional;
+        private String especialidad; // <--- NUEVO CAMPO
         private Long horarioId;
         private String dia;
         private String horaInicio;

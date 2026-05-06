@@ -87,6 +87,7 @@ public class CitaServiceImpl implements CitaService {
                 .nombreEstudiante(c.getEstudiante().getUsuario().getNombre())
                 .profesionalId(c.getProfesional().getId())
                 .nombreProfesional(c.getProfesional().getUsuario().getNombre())
+                .especialidad(c.getProfesional().getEspecialidad()) // <--- MAPEO NUEVO
                 .horarioId(c.getHorario().getId())
                 .dia(c.getHorario().getDia())
                 .horaInicio(c.getHorario().getHoraInicio().toString())
