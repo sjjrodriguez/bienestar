@@ -4,7 +4,10 @@ import com.bienestar.dto.SeguimientoDTO;
 import java.util.List;
 
 public interface SeguimientoService {
-    SeguimientoDTO.Response registrar(Long profesionalId, SeguimientoDTO.Request request);
+
+    // 1. Método para guardar en Supabase (Ahora coincide con el Impl y el Controller)
+    SeguimientoDTO.Response crear(SeguimientoDTO.Request request);
+
+    // 2. Método para ver el historial
     List<SeguimientoDTO.Response> listarPorSolicitud(Long solicitudId);
-    List<SeguimientoDTO.Response> listarPorEstudiante(Long estudianteId);
 }

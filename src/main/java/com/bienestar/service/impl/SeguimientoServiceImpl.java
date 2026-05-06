@@ -7,7 +7,7 @@ import com.bienestar.model.Solicitud;
 import com.bienestar.repository.ProfesionalRepository;
 import com.bienestar.repository.SeguimientoRepository;
 import com.bienestar.repository.SolicitudRepository;
-import com.bienestar.service.SeguimientoService;
+import com.bienestar.service.SeguimientoService; // Interfaz que debes tener creada
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,25 +20,36 @@ import java.util.stream.Collectors;
 public class SeguimientoServiceImpl implements SeguimientoService {
 
     private final SeguimientoRepository seguimientoRepository;
-    private final SolicitudRepository solicitudRepository;
     private final ProfesionalRepository profesionalRepository;
+    private final SolicitudRepository solicitudRepository;
 
     @Override
     @Transactional
-    public SeguimientoDTO.Response registrar(Long profesionalId, SeguimientoDTO.Request request) {
+    public SeguimientoDTO.Response crear(SeguimientoDTO.Request request) {
+
+        // 1. Buscamos que existan el profesional y la solicitud
+        Profesional profesional = profesionalRepository.findById(request.getProfesionalId())
+                .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+
         Solicitud solicitud = solicitudRepository.findById(request.getSolicitudId())
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 
-        Profesional profesional = profesionalRepository.findById(profesionalId)
-                .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
-
+        // 2. Armamos la entidad para Supabase
         Seguimiento seguimiento = Seguimiento.builder()
-                .solicitud(solicitud)
-                .profesional(profesional)
                 .nota(request.getNota())
+                .profesional(profesional)
+                .solicitud(solicitud)
+                // fechaRegistro se genera sola por el @Builder.Default de la entidad
                 .build();
 
-        return toResponse(seguimientoRepository.save(seguimiento));
+        // 3. Guardamos
+        seguimiento = seguimientoRepository.save(seguimiento);
+
+        // Opcional: Aquí podrías cambiar el estado de la Solicitud a "PROCESADA" o "ATENDIDA"
+        // solicitud.setEstado(EstadoSolicitud.PROCESADA);
+        // solicitudRepository.save(solicitud);
+
+        return toResponse(seguimiento);
     }
 
     @Override
@@ -47,12 +58,7 @@ public class SeguimientoServiceImpl implements SeguimientoService {
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
-    @Override
-    public List<SeguimientoDTO.Response> listarPorEstudiante(Long estudianteId) {
-        return seguimientoRepository.findBySolicitud_Estudiante_Id(estudianteId).stream()
-                .map(this::toResponse).collect(Collectors.toList());
-    }
-
+    // Convertidor de Entidad a DTO
     private SeguimientoDTO.Response toResponse(Seguimiento s) {
         return SeguimientoDTO.Response.builder()
                 .id(s.getId())
