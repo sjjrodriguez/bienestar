@@ -10,4 +10,8 @@ public interface SeguimientoService {
 
     // 2. Método para ver el historial
     List<SeguimientoDTO.Response> listarPorSolicitud(Long solicitudId);
+
+    // 👇 LOS DOS MÉTODOS FALTANTES QUE EXIGEN LOS OTROS CONTROLADORES 👇
+    SeguimientoDTO.Response registrar(Long profesionalId, SeguimientoDTO.Request request);
+    List<SeguimientoDTO.Response> listarPorEstudiante(Long estudianteId);
 }
