@@ -28,8 +28,8 @@ public class SeguimientoServiceImpl implements SeguimientoService {
     @Transactional
     public SeguimientoDTO.Response crear(SeguimientoDTO.Request request) {
 
-        // 1. Buscamos que existan el profesional y la solicitud
-        Profesional profesional = profesionalRepository.findById(request.getProfesionalId())
+        // 👇 AQUÍ ESTÁ LA MAGIA: Usamos findByUsuario_Id 👇
+        Profesional profesional = profesionalRepository.findByUsuario_Id(request.getProfesionalId())
                 .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
 
         Solicitud solicitud = solicitudRepository.findById(request.getSolicitudId())
