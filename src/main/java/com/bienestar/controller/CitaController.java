@@ -19,21 +19,23 @@ public class CitaController {
 
     private final CitaService citaService;
 
-    // 1. Agendar Cita (POST)
-    // Ruta: POST http://localhost:8080/api/citas
-    @PostMapping
-    public ResponseEntity<CitaDTO.Response> agendarCita(@Valid @RequestBody CitaDTO.Request request) {
-        Long estudianteIdFijo = 1L; // ID fijo para el estudiante
-        CitaDTO.Response response = citaService.agendar(estudianteIdFijo, request);
+    // 1. Agendar Cita (POST) - AHORA RECIBE EL ID DEL ESTUDIANTE
+    // Ruta: POST http://localhost:8080/api/citas/estudiante/{estudianteId}
+    @PostMapping("/estudiante/{estudianteId}")
+    public ResponseEntity<CitaDTO.Response> agendarCita(
+            @PathVariable Long estudianteId,
+            @Valid @RequestBody CitaDTO.Request request) {
+        // Long estudianteIdFijo = 1L; // <- BORRAMOS ESTO
+        CitaDTO.Response response = citaService.agendar(estudianteId, request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // 2. Listar todas las citas del estudiante (GET)
-    // Ruta: GET http://localhost:8080/api/citas/estudiante
-    @GetMapping("/estudiante")
-    public ResponseEntity<List<CitaDTO.Response>> listarPorEstudiante() {
-        Long estudianteIdFijo = 1L; // Reutilizamos el ID fijo
-        List<CitaDTO.Response> responses = citaService.listarPorEstudiante(estudianteIdFijo);
+    // 2. Listar todas las citas del estudiante (GET) - AHORA RECIBE EL ID
+    // Ruta: GET http://localhost:8080/api/citas/estudiante/{estudianteId}
+    @GetMapping("/estudiante/{estudianteId}")
+    public ResponseEntity<List<CitaDTO.Response>> listarPorEstudiante(@PathVariable Long estudianteId) {
+        // Long estudianteIdFijo = 1L; // <- BORRAMOS ESTO
+        List<CitaDTO.Response> responses = citaService.listarPorEstudiante(estudianteId);
         return ResponseEntity.ok(responses);
     }
 
