@@ -24,6 +24,7 @@ public class AdminController {
     private final ReporteService reporteService;
     private final CitaService citaService;
     private final SolicitudService solicitudService;
+    private final com.bienestar.repository.UsuarioRepository usuarioRepository;
 
     // ── Estudiantes ───────────────────────────────────────────
     @GetMapping("/estudiantes")
@@ -95,5 +96,11 @@ public class AdminController {
     public ResponseEntity<?> getTodasLasSolicitudes() {
         // Asegúrate de que el método en tu servicio se llame listarTodos() o findAll()
         return ResponseEntity.ok(solicitudService.listarTodas());
+    }
+
+    @GetMapping("/usuarios")
+    public ResponseEntity<?> getTodosLosUsuarios() {
+        // Trae toda la tabla de usuarios directamente de PostgreSQL
+        return ResponseEntity.ok(usuarioRepository.findAll());
     }
 }
