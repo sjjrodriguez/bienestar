@@ -1,11 +1,8 @@
 package com.bienestar.service.impl;
 
 import com.bienestar.dto.SolicitudDTO;
-import com.bienestar.model.Estudiante;
-import com.bienestar.model.Solicitud;
-import com.bienestar.model.EstadoSolicitud;
-import com.bienestar.repository.EstudianteRepository;
-import com.bienestar.repository.SolicitudRepository;
+import com.bienestar.model.*;
+import com.bienestar.repository.*;
 import com.bienestar.service.SolicitudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,12 +24,11 @@ public class SolicitudServiceImpl implements SolicitudService {
         Estudiante estudiante = estudianteRepository.findById(estudianteId)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
 
-        // MAPEO: Ahora pasamos la descripción del Request a la Entidad
         Solicitud solicitud = Solicitud.builder()
                 .estudiante(estudiante)
                 .tipo(request.getTipo())
-                .descripcion(request.getDescripcion()) // <--- IMPORTANTE
-                .estado(EstadoSolicitud.PENDIENTE) // Aseguramos el estado inicial
+                .descripcion(request.getDescripcion()) // Hibernate lo mapea a 'motivo' en la DB
+                .estado(EstadoSolicitud.PENDIENTE)
                 .build();
 
         return toResponse(solicitudRepository.save(solicitud));
@@ -55,7 +51,10 @@ public class SolicitudServiceImpl implements SolicitudService {
     public SolicitudDTO.Response actualizarEstado(Long id, SolicitudDTO.ActualizarEstadoRequest request) {
         Solicitud solicitud = solicitudRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
         solicitud.setEstado(request.getEstado());
+        // Aquí podrías asignar el profesional que está actualizando la solicitud si fuera necesario
+
         return toResponse(solicitudRepository.save(solicitud));
     }
 
@@ -65,9 +64,11 @@ public class SolicitudServiceImpl implements SolicitudService {
                 .estudianteId(s.getEstudiante().getId())
                 .nombreEstudiante(s.getEstudiante().getUsuario().getNombre())
                 .tipo(s.getTipo())
-                .descripcion(s.getDescripcion()) // <--- Para que el estudiante la vea en su lista
+                .descripcion(s.getDescripcion())
                 .estado(s.getEstado())
                 .createdAt(s.getCreatedAt())
+                // Si la solicitud ya tiene un profesional asignado, mandamos su nombre
+                .nombreProfesional(s.getProfesional() != null ? s.getProfesional().getUsuario().getNombre() : "Pendiente de asignar")
                 .build();
     }
 }

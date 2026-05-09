@@ -33,7 +33,7 @@ public class Solicitud {
     @Column(nullable = false)
     private TipoSolicitud tipo;
 
-    // 🎯 EL TRUCO: Java usa 'descripcion', pero Supabase usa 'motivo'
+    // 🎯 Mapeo: Java usa 'descripcion', Supabase usa 'motivo'
     @Column(name = "motivo", columnDefinition = "TEXT")
     private String descripcion;
 
