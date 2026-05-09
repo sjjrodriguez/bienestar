@@ -21,12 +21,10 @@ public class Solicitud {
     @JoinColumn(name = "estudiante_id", nullable = false)
     private Estudiante estudiante;
 
-    // 🎯 NUEVO: Relación con el Profesional (necesaria para el Repository)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profesional_id")
     private Profesional profesional;
 
-    // 🎯 NUEVO: Relación con el Horario (para saber la hora de la cita)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "horario_id")
     private Horario horario;
@@ -35,11 +33,10 @@ public class Solicitud {
     @Column(nullable = false)
     private TipoSolicitud tipo;
 
-    // Usamos 'motivo' para coincidir con tu base de datos
-    @Column(columnDefinition = "TEXT")
-    private String motivo;
+    // 🎯 EL TRUCO: Java usa 'descripcion', pero Supabase usa 'motivo'
+    @Column(name = "motivo", columnDefinition = "TEXT")
+    private String descripcion;
 
-    // 🎯 NUEVO: Campo de fecha para la cita
     private LocalDate fecha;
 
     @Enumerated(EnumType.STRING)
