@@ -28,23 +28,28 @@ public class SeguimientoServiceImpl implements SeguimientoService {
     @Transactional
     public SeguimientoDTO.Response crear(SeguimientoDTO.Request request) {
 
-        // 👇 AQUÍ ESTÁ LA MAGIA: Usamos findByUsuario_Id 👇
+        // 👇 ESTO NOS DIRÁ LA VERDAD EN LOS LOGS DE RENDER 👇
+        System.out.println("[DEBUG] Recibiendo solicitudId: " + request.getSolicitudId());
+        System.out.println("[DEBUG] Recibiendo profesionalId (ID de Usuario): " + request.getProfesionalId());
+
+        // 1. Buscamos al profesional usando el ID de Usuario que viene de Android
         Profesional profesional = profesionalRepository.findByUsuario_Id(request.getProfesionalId())
-                .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Profesional no encontrado para el usuario ID: " + request.getProfesionalId()));
 
+        // 2. Buscamos la solicitud (Si falla aquí, es por el JOIN con Estudiante/Usuario)
         Solicitud solicitud = solicitudRepository.findById(request.getSolicitudId())
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada con ID: " + request.getSolicitudId()));
 
-        // 2. Armamos la entidad para Supabase
+        // 3. Armamos la entidad para Supabase
         Seguimiento seguimiento = Seguimiento.builder()
                 .nota(request.getNota())
                 .profesional(profesional)
                 .solicitud(solicitud)
-                // fechaRegistro se genera sola por el @Builder.Default de la entidad
                 .build();
 
-        // 3. Guardamos
+        // 4. Guardamos
         seguimiento = seguimientoRepository.save(seguimiento);
+        System.out.println("[DEBUG] ¡Seguimiento guardado exitosamente con ID: " + seguimiento.getId() + "!");
 
         return toResponse(seguimiento);
     }
@@ -55,23 +60,18 @@ public class SeguimientoServiceImpl implements SeguimientoService {
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
-    // 👇 IMPLEMENTACIÓN DE LOS MÉTODOS "PARCHE" PARA QUE COMPILE RENDER 👇
-
     @Override
     @Transactional
     public SeguimientoDTO.Response registrar(Long profesionalId, SeguimientoDTO.Request request) {
-        // Reutilizamos la lógica del método crear
         request.setProfesionalId(profesionalId);
         return crear(request);
     }
 
     @Override
     public List<SeguimientoDTO.Response> listarPorEstudiante(Long estudianteId) {
-        // Retornamos lista vacía para que no tire error al compilar
         return Collections.emptyList();
     }
 
-    // Convertidor de Entidad a DTO
     private SeguimientoDTO.Response toResponse(Seguimiento s) {
         return SeguimientoDTO.Response.builder()
                 .id(s.getId())
