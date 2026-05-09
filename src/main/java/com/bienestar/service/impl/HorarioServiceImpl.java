@@ -19,7 +19,6 @@ public class HorarioServiceImpl implements HorarioService {
     private final HorarioRepository horarioRepository;
     private final ProfesionalRepository profesionalRepository;
 
-    // Se mantiene para el Admin
     @Override
     public HorarioDTO.Response crear(HorarioDTO.Request request) {
         Profesional prof = profesionalRepository.findById(request.getProfesionalId())
@@ -27,17 +26,14 @@ public class HorarioServiceImpl implements HorarioService {
         return guardarHorario(prof, request);
     }
 
-    // 🎯 SOLUCIÓN PARA EL PROFESIONAL: Busca por el ID de Usuario
     @Override
     @Transactional
     public HorarioDTO.Response crearDesdeProfesional(Long usuarioId, HorarioDTO.Request request) {
         Profesional prof = profesionalRepository.findByUsuario_Id(usuarioId)
-                .orElseThrow(() -> new RuntimeException("No se encontró el perfil profesional para este usuario"));
-
+                .orElseThrow(() -> new RuntimeException("No se encontró el perfil profesional"));
         return guardarHorario(prof, request);
     }
 
-    // Método privado para no repetir código de guardado
     private HorarioDTO.Response guardarHorario(Profesional prof, HorarioDTO.Request request) {
         Horario horario = Horario.builder()
                 .profesional(prof)
@@ -61,8 +57,10 @@ public class HorarioServiceImpl implements HorarioService {
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
+    // 🎯 CORREGIDO: Nombre en español para que el AdminController lo encuentre
     @Override
-    public void deactivate(Long id) {
+    @Transactional
+    public void desactivar(Long id) {
         Horario h = horarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado"));
         h.setActivo(false);

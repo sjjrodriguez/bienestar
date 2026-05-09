@@ -13,5 +13,5 @@ public interface HorarioService {
     List<HorarioDTO.Response> listarPorProfesional(Long profesionalId);
     List<HorarioDTO.Response> listarPorUsuario(Long usuarioId);
 
-    void deactivate(Long id);
+    void desactivar(Long id);
 }
