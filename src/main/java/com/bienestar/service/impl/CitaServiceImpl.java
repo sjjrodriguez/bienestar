@@ -33,18 +33,13 @@ public class CitaServiceImpl implements CitaService {
         Horario horario = horarioRepository.findById(request.getHorarioId())
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado"));
 
-        boolean ocupado = citaRepository.existsByHorario_IdAndFechaAndEstadoNot(
-                horario.getId(), request.getFecha(), EstadoCita.CANCELADA);
-        if (ocupado) {
-            throw new RuntimeException("El horario ya está ocupado para esa fecha");
-        }
-
         Cita cita = Cita.builder()
                 .estudiante(estudiante)
                 .profesional(profesional)
                 .horario(horario)
                 .fecha(request.getFecha())
                 .motivo(request.getMotivo())
+                .estado(EstadoCita.PENDIENTE)
                 .build();
 
         return toResponse(citaRepository.save(cita));
@@ -57,14 +52,16 @@ public class CitaServiceImpl implements CitaService {
     }
 
     @Override
-    public List<CitaDTO.Response> listarPorProfesional(Long profesionalId) {
-        return citaRepository.findByProfesional_Id(profesionalId).stream()
+    public List<CitaDTO.Response> listarPorProfesional(Long usuarioId) {
+        // 🎯 Uso del método puente que acabamos de crear en el Repository
+        return citaRepository.findByProfesional_Usuario_Id(usuarioId).stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
     @Override
-    public List<CitaDTO.Response> listarPorProfesionalYFecha(Long profesionalId, LocalDate fecha) {
-        return citaRepository.findByProfesional_IdAndFecha(profesionalId, fecha).stream()
+    public List<CitaDTO.Response> listarPorProfesionalYFecha(Long usuarioId, LocalDate fecha) {
+        // 🎯 Uso del método corregido para evitar el error de .getFecha()
+        return citaRepository.findByProfesional_Usuario_IdAndFecha(usuarioId, fecha).stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
@@ -73,10 +70,7 @@ public class CitaServiceImpl implements CitaService {
     public CitaDTO.Response actualizarEstado(Long citaId, CitaDTO.ActualizarEstadoRequest request) {
         Cita cita = citaRepository.findById(citaId)
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
-        cita.setEstado(request.getEstado());
-        if (request.getNotaProfesional() != null) {
-            cita.setNotaProfesional(request.getNotaProfesional());
-        }
+        if (request.getEstado() != null) cita.setEstado(request.getEstado());
         return toResponse(citaRepository.save(cita));
     }
 
@@ -87,15 +81,13 @@ public class CitaServiceImpl implements CitaService {
                 .nombreEstudiante(c.getEstudiante().getUsuario().getNombre())
                 .profesionalId(c.getProfesional().getId())
                 .nombreProfesional(c.getProfesional().getUsuario().getNombre())
-                .especialidad(c.getProfesional().getEspecialidad()) // <--- MAPEO NUEVO
+                .especialidad(c.getProfesional().getEspecialidad())
                 .horarioId(c.getHorario().getId())
                 .dia(c.getHorario().getDia())
                 .horaInicio(c.getHorario().getHoraInicio().toString())
                 .fecha(c.getFecha())
                 .estado(c.getEstado())
                 .motivo(c.getMotivo())
-                .notaProfesional(c.getNotaProfesional())
-                .createdAt(c.getCreatedAt())
                 .build();
     }
 }

@@ -9,9 +9,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CitaRepository extends JpaRepository<Cita, Long> {
+
+    // ─── CONSULTAS PARA EL ESTUDIANTE ──────────────────────────
     List<Cita> findByEstudiante_Id(Long estudianteId);
-    List<Cita> findByProfesional_Id(Long profesionalId);
-    List<Cita> findByProfesional_IdAndFecha(Long profesionalId, LocalDate fecha);
+
+    // ─── CONSULTAS PARA EL PROFESIONAL (Basadas en ID de Usuario) ─
+
+    // 🎯 ESTOS SON LOS QUE TE HACÍAN FALTA:
+    // Permiten cruzar desde Cita -> Profesional -> Usuario -> Id
+    List<Cita> findByProfesional_Usuario_Id(Long usuarioId);
+
+    List<Cita> findByProfesional_Usuario_IdAndFecha(Long usuarioId, LocalDate fecha);
+
+    // ─── VALIDACIONES Y ESTADÍSTICAS ────────────────────────────
+
     boolean existsByHorario_IdAndFechaAndEstadoNot(Long horarioId, LocalDate fecha, EstadoCita estado);
 
     @Query("SELECT c.estado, COUNT(c) FROM Cita c GROUP BY c.estado")
