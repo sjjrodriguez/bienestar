@@ -10,4 +10,7 @@ public interface CitaService {
     List<CitaDTO.Response> listarPorProfesional(Long profesionalId);
     List<CitaDTO.Response> listarPorProfesionalYFecha(Long profesionalId, LocalDate fecha);
     CitaDTO.Response actualizarEstado(Long citaId, CitaDTO.ActualizarEstadoRequest request);
+
+    // 🎯 NUEVO MÉTODO PARA EL ADMINISTRADOR
+    List<CitaDTO.Response> listarTodos();
 }

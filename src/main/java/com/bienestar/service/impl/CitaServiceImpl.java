@@ -74,6 +74,14 @@ public class CitaServiceImpl implements CitaService {
         return toResponse(citaRepository.save(cita));
     }
 
+    // 🎯 NUEVO MÉTODO IMPLEMENTADO PARA EL ADMINISTRADOR
+    @Override
+    public List<CitaDTO.Response> listarTodos() {
+        return citaRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     private CitaDTO.Response toResponse(Cita c) {
         return CitaDTO.Response.builder()
                 .id(c.getId())

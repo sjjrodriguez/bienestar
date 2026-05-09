@@ -4,10 +4,7 @@ import com.bienestar.dto.EstudianteDTO;
 import com.bienestar.dto.HorarioDTO;
 import com.bienestar.dto.ProfesionalDTO;
 import com.bienestar.dto.ReporteDTO;
-import com.bienestar.service.EstudianteService;
-import com.bienestar.service.HorarioService;
-import com.bienestar.service.ProfesionalService;
-import com.bienestar.service.ReporteService;
+import com.bienestar.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +22,8 @@ public class AdminController {
     private final ProfesionalService profesionalService;
     private final HorarioService horarioService;
     private final ReporteService reporteService;
+    private final CitaService citaService;
+    private final SolicitudService solicitudService;
 
     // ── Estudiantes ───────────────────────────────────────────
     @GetMapping("/estudiantes")
@@ -82,5 +81,19 @@ public class AdminController {
     @GetMapping("/reportes/estadisticas")
     public ResponseEntity<ReporteDTO.EstadisticasBienestar> estadisticas() {
         return ResponseEntity.ok(reporteService.obtenerEstadisticas());
+    }
+
+    // ── Citas y Solicitudes (Para el Dashboard del Admin) ──────
+
+    @GetMapping("/citas")
+    public ResponseEntity<?> getTodasLasCitas() {
+        // Asegúrate de que el método en tu servicio se llame listarTodos(), listarTodas() o findAll()
+        return ResponseEntity.ok(citaService.listarTodos());
+    }
+
+    @GetMapping("/solicitudes")
+    public ResponseEntity<?> getTodasLasSolicitudes() {
+        // Asegúrate de que el método en tu servicio se llame listarTodos() o findAll()
+        return ResponseEntity.ok(solicitudService.listarTodas());
     }
 }
