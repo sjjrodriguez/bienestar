@@ -39,11 +39,12 @@ public class CitaController {
         return ResponseEntity.ok(responses);
     }
 
-    // 3. Listar citas por profesional (GET)
-    // Ruta: GET http://localhost:8080/api/citas/profesional/2
-    @GetMapping("/profesional/{profesionalId}")
-    public ResponseEntity<List<CitaDTO.Response>> listarPorProfesional(@PathVariable Long profesionalId) {
-        List<CitaDTO.Response> responses = citaService.listarPorProfesional(profesionalId);
+    // 3. Listar citas por profesional
+    // Ruta: GET http://localhost:8080/api/citas/profesional/{usuarioId}
+    @GetMapping("/profesional/{usuarioId}")
+    public ResponseEntity<List<CitaDTO.Response>> listarPorProfesional(@PathVariable Long usuarioId) {
+        // 🎯 IMPORTANTE: El Service ya tiene el método findByProfesional_Usuario_Id
+        List<CitaDTO.Response> responses = citaService.listarPorProfesional(usuarioId);
         return ResponseEntity.ok(responses);
     }
 

@@ -8,8 +8,6 @@ import com.bienestar.repository.ProfesionalRepository;
 import com.bienestar.service.HorarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,35 +19,41 @@ public class HorarioServiceImpl implements HorarioService {
     private final ProfesionalRepository profesionalRepository;
 
     @Override
-    @Transactional
     public HorarioDTO.Response crear(HorarioDTO.Request request) {
-        Profesional profesional = profesionalRepository.findById(request.getProfesionalId())
+        Profesional prof = profesionalRepository.findById(request.getProfesionalId())
                 .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
 
         Horario horario = Horario.builder()
-                .profesional(profesional)
+                .profesional(prof)
                 .dia(request.getDia())
                 .horaInicio(request.getHoraInicio())
                 .horaFin(request.getHoraFin())
+                .activo(true)
                 .build();
 
         return toResponse(horarioRepository.save(horario));
     }
 
+    // 🎯 Implementación para el ADMIN
     @Override
     public List<HorarioDTO.Response> listarPorProfesional(Long profesionalId) {
-        return horarioRepository.findByProfesional_IdAndActivoTrue(profesionalId).stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        return horarioRepository.findByProfesional_Id(profesionalId).stream()
+                .map(this::toResponse).collect(Collectors.toList());
+    }
+
+    // 🎯 Implementación para el PROFESIONAL (El que arregla el bug)
+    @Override
+    public List<HorarioDTO.Response> listarPorUsuario(Long usuarioId) {
+        return horarioRepository.findByProfesional_Usuario_Id(usuarioId).stream()
+                .map(this::toResponse).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
     public void desactivar(Long id) {
-        Horario horario = horarioRepository.findById(id)
+        Horario h = horarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Horario no encontrado"));
-        horario.setActivo(false);
-        horarioRepository.save(horario);
+        h.setActivo(false);
+        horarioRepository.save(h);
     }
 
     private HorarioDTO.Response toResponse(Horario h) {
