@@ -10,19 +10,16 @@ import java.util.List;
 
 public interface CitaRepository extends JpaRepository<Cita, Long> {
 
-    // ─── CONSULTAS PARA EL ESTUDIANTE ──────────────────────────
-    List<Cita> findByEstudiante_Id(Long estudianteId);
+    // ─── CONSULTAS PARA EL ESTUDIANTE (CON EL PUENTE AL USUARIO) ───
 
-    // ─── CONSULTAS PARA EL PROFESIONAL (Basadas en ID de Usuario) ─
+    // 🎯 ESTA ES LA SOLUCIÓN: Busca la cita por el ID de Usuario del estudiante
+    List<Cita> findByEstudiante_Usuario_Id(Long usuarioId);
 
-    // 🎯 ESTOS SON LOS QUE TE HACÍAN FALTA:
-    // Permiten cruzar desde Cita -> Profesional -> Usuario -> Id
+    // ─── CONSULTAS PARA EL PROFESIONAL ──────────────────────────
     List<Cita> findByProfesional_Usuario_Id(Long usuarioId);
-
     List<Cita> findByProfesional_Usuario_IdAndFecha(Long usuarioId, LocalDate fecha);
 
-    // ─── VALIDACIONES Y ESTADÍSTICAS ────────────────────────────
-
+    // ─── VALIDACIONES ───────────────────────────────────────────
     boolean existsByHorario_IdAndFechaAndEstadoNot(Long horarioId, LocalDate fecha, EstadoCita estado);
 
     @Query("SELECT c.estado, COUNT(c) FROM Cita c GROUP BY c.estado")

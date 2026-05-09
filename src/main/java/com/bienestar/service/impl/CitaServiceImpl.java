@@ -23,9 +23,10 @@ public class CitaServiceImpl implements CitaService {
 
     @Override
     @Transactional
-    public CitaDTO.Response agendar(Long estudianteId, CitaDTO.Request request) {
-        Estudiante estudiante = estudianteRepository.findById(estudianteId)
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+    public CitaDTO.Response agendar(Long usuarioId, CitaDTO.Request request) {
+        // 🎯 CORRECCIÓN: Buscamos al estudiante que pertenece a ese ID de Usuario
+        Estudiante estudiante = estudianteRepository.findByUsuario_Id(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado para el usuario: " + usuarioId));
 
         Profesional profesional = profesionalRepository.findById(request.getProfesionalId())
                 .orElseThrow(() -> new RuntimeException("Profesional no encontrado"));
@@ -46,21 +47,20 @@ public class CitaServiceImpl implements CitaService {
     }
 
     @Override
-    public List<CitaDTO.Response> listarPorEstudiante(Long estudianteId) {
-        return citaRepository.findByEstudiante_Id(estudianteId).stream()
+    public List<CitaDTO.Response> listarPorEstudiante(Long usuarioId) {
+        // 🎯 CORRECCIÓN: Usamos el nuevo método findByEstudiante_Usuario_Id
+        return citaRepository.findByEstudiante_Usuario_Id(usuarioId).stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<CitaDTO.Response> listarPorProfesional(Long usuarioId) {
-        // 🎯 Uso del método puente que acabamos de crear en el Repository
         return citaRepository.findByProfesional_Usuario_Id(usuarioId).stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<CitaDTO.Response> listarPorProfesionalYFecha(Long usuarioId, LocalDate fecha) {
-        // 🎯 Uso del método corregido para evitar el error de .getFecha()
         return citaRepository.findByProfesional_Usuario_IdAndFecha(usuarioId, fecha).stream()
                 .map(this::toResponse).collect(Collectors.toList());
     }
@@ -74,7 +74,6 @@ public class CitaServiceImpl implements CitaService {
         return toResponse(citaRepository.save(cita));
     }
 
-    // 🎯 NUEVO MÉTODO IMPLEMENTADO PARA EL ADMINISTRADOR
     @Override
     public List<CitaDTO.Response> listarTodos() {
         return citaRepository.findAll().stream()
