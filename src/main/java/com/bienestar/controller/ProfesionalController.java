@@ -29,7 +29,6 @@ public class ProfesionalController {
         return ResponseEntity.ok(horarioService.listarPorUsuario(usuarioId));
     }
 
-    // 🎯 NUEVO: Guardar horario propio
     @PostMapping("/{usuarioId}/horarios")
     public ResponseEntity<HorarioDTO.Response> crearMiHorario(
             @PathVariable Long usuarioId,

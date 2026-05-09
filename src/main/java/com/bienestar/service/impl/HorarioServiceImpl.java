@@ -29,6 +29,7 @@ public class HorarioServiceImpl implements HorarioService {
     @Override
     @Transactional
     public HorarioDTO.Response crearDesdeProfesional(Long usuarioId, HorarioDTO.Request request) {
+        // 🎯 BUSCAMOS POR USUARIO_ID PARA QUE NO SE CRUCEN LOS DATOS
         Profesional prof = profesionalRepository.findByUsuario_Id(usuarioId)
                 .orElseThrow(() -> new RuntimeException("No se encontró el perfil profesional"));
         return guardarHorario(prof, request);
@@ -57,7 +58,6 @@ public class HorarioServiceImpl implements HorarioService {
                 .map(this::toResponse).collect(Collectors.toList());
     }
 
-    // 🎯 CORREGIDO: Nombre en español para que el AdminController lo encuentre
     @Override
     @Transactional
     public void desactivar(Long id) {
