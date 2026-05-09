@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "solicitudes") // 🎯 CAMBIO 1: Apuntamos a la tabla donde están los datos
+@Table(name = "citas") // 🎯 CAMBIO 1: Apuntar a la tabla 'citas', NO a 'solicitudes'
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,17 +26,18 @@ public class Cita {
     private Profesional profesional;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "horario_id") // Quitamos nullable=false porque en tu DB está en NULL
+    @JoinColumn(name = "horario_id")
     private Horario horario;
 
-    private LocalDate fecha; // En tu DB está en NULL, ojo ahí
+    private LocalDate fecha;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private EstadoCita estado = EstadoCita.PENDIENTE;
 
-    // 🎯 CAMBIO 2: Java usa 'motivo', pero en Supabase los datos están en 'descripcion'
-    @Column(name = "descripcion")
+    // 🎯 CAMBIO 2: Verifica en tu tabla 'citas' si la columna se llama 'motivo' o 'descripcion'
+    // Si en la DB es 'motivo', quita el @Column o cámbialo a name = "motivo"
+    @Column(name = "motivo")
     private String motivo;
 
     @Column(name = "nota_profesional")
